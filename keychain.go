@@ -1,3 +1,4 @@
+//go:build darwin || ios
 // +build darwin ios
 
 package keychain
@@ -417,6 +418,7 @@ func GetGenericPassword(service string, account string, label string, accessGrou
 
 // DeleteItemRef deletes a keychain item reference.
 func DeleteItemRef(ref C.CFTypeRef) error {
-	errCode := C.SecKeychainItemDelete(C.SecKeychainItemRef(ref))
-	return checkError(errCode)
+	return checkError(100)
+	// errCode := C.SecKeychainItemDelete(C.SecKeychainItemRef(ref))
+	// return checkError(errCode)
 }
