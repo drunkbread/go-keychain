@@ -10,9 +10,8 @@ package keychain
 #include <Security/Security.h>
 */
 import "C"
-import "unsafe"
 
-var AccessibleKey = attrKey(C.CFTypeRef(C.kSecAttrAccessible))
+var AccessibleKey = nil
 var accessibleTypeRef = map[Accessible]C.CFTypeRef{
 	AccessibleWhenUnlocked:                   C.CFTypeRef(C.kSecAttrAccessibleWhenUnlocked),
 	AccessibleAfterFirstUnlock:               C.CFTypeRef(C.kSecAttrAccessibleAfterFirstUnlock),
@@ -24,64 +23,64 @@ var accessibleTypeRef = map[Accessible]C.CFTypeRef{
 }
 
 var (
-	AccessKey = attrKey(C.CFTypeRef(C.kSecAttrAccess))
+	AccessKey = nil
 )
 
 // The returned SecAccessRef, if non-nil, must be released via CFRelease.
 func createAccess(label string, trustedApplications []string) (C.CFTypeRef, error) {
-	if len(trustedApplications) == 0 {
-		return nil, nil
-	}
+	// if len(trustedApplications) == 0 {
+	// 	return nil, nil
+	// }
 
-	// Always prepend with empty string which signifies that we
-	// include a NULL application, which means ourselves.
-	trustedApplications = append([]string{""}, trustedApplications...)
+	// // Always prepend with empty string which signifies that we
+	// // include a NULL application, which means ourselves.
+	// trustedApplications = append([]string{""}, trustedApplications...)
 
-	var err error
-	var labelRef C.CFStringRef
-	if labelRef, err = StringToCFString(label); err != nil {
-		return nil, err
-	}
-	defer C.CFRelease(C.CFTypeRef(labelRef))
+	// var err error
+	// var labelRef C.CFStringRef
+	// if labelRef, err = StringToCFString(label); err != nil {
+	// 	return nil, err
+	// }
+	// defer C.CFRelease(C.CFTypeRef(labelRef))
 
-	var trustedApplicationsRefs []C.CFTypeRef
-	for _, trustedApplication := range trustedApplications {
-		trustedApplicationRef, err := createTrustedApplication(trustedApplication)
-		if err != nil {
-			return nil, err
-		}
-		defer C.CFRelease(C.CFTypeRef(trustedApplicationRef))
-		trustedApplicationsRefs = append(trustedApplicationsRefs, trustedApplicationRef)
-	}
+	// var trustedApplicationsRefs []C.CFTypeRef
+	// for _, trustedApplication := range trustedApplications {
+	// 	trustedApplicationRef, err := createTrustedApplication(trustedApplication)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	defer C.CFRelease(C.CFTypeRef(trustedApplicationRef))
+	// 	trustedApplicationsRefs = append(trustedApplicationsRefs, trustedApplicationRef)
+	// }
 
-	var access C.SecAccessRef
-	trustedApplicationsArray := ArrayToCFArray(trustedApplicationsRefs)
-	defer C.CFRelease(C.CFTypeRef(trustedApplicationsArray))
-	errCode := C.SecAccessCreate(labelRef, trustedApplicationsArray, &access)
-	err = checkError(errCode)
-	if err != nil {
-		return nil, err
-	}
+	// var access C.SecAccessRef
+	// trustedApplicationsArray := ArrayToCFArray(trustedApplicationsRefs)
+	// defer C.CFRelease(C.CFTypeRef(trustedApplicationsArray))
+	// errCode := C.SecAccessCreate(labelRef, trustedApplicationsArray, &access)
+	// err = checkError(errCode)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	return C.CFTypeRef(access), nil
+	return nil, nil
 }
 
 // The returned SecTrustedApplicationRef, if non-nil, must be released via CFRelease.
 func createTrustedApplication(trustedApplication string) (C.CFTypeRef, error) {
-	var trustedApplicationCStr *C.char
-	if trustedApplication != "" {
-		trustedApplicationCStr = C.CString(trustedApplication)
-		defer C.free(unsafe.Pointer(trustedApplicationCStr))
-	}
+	// var trustedApplicationCStr *C.char
+	// if trustedApplication != "" {
+	// 	trustedApplicationCStr = C.CString(trustedApplication)
+	// 	defer C.free(unsafe.Pointer(trustedApplicationCStr))
+	// }
 
-	var trustedApplicationRef C.SecTrustedApplicationRef
-	errCode := C.SecTrustedApplicationCreateFromPath(trustedApplicationCStr, &trustedApplicationRef)
-	err := checkError(errCode)
-	if err != nil {
-		return nil, err
-	}
+	// var trustedApplicationRef C.SecTrustedApplicationRef
+	// errCode := C.SecTrustedApplicationCreateFromPath(trustedApplicationCStr, &trustedApplicationRef)
+	// err := checkError(errCode)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	return C.CFTypeRef(trustedApplicationRef), nil
+	return nil, nil
 }
 
 type Access struct {
